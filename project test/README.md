@@ -4,6 +4,8 @@
 
 ![WLOP_We Love Our Pet (1)](https://github.com/dongh810/Beyond_SW_Camp_Study/assets/105986200/6b0d780f-b49d-41bc-8a9f-098f61d48315)
 
+![Group 1 (1)](https://github.com/dongh810/Beyond_SW_Camp_Study/assets/105986200/c94d797e-18a3-4310-8b6a-1d76b51978e5)
+
 ## 💫프로젝트 개요
 
 ![20230129502084](https://github.com/dongh810/Beyond_SW_Camp_Study/assets/105986200/2438d8d0-57b6-476e-a8e9-17f019788818)
