@@ -20,3 +20,6 @@
 
 ## ERD CLOUD
 ![KakaoTalk_20240105_121957629](https://github.com/dongh810/Beyond_SW_Camp_Study/assets/105986200/5bea80bf-2fe8-40d0-a167-7b8bbee78468)
+
+## 요구사항 명세서
+![요구사항 명세서](https://github.com/dongh810/Beyond_SW_Camp_Study/assets/105986200/1da4106f-bd5e-4c63-a4d2-1849846c5678)
