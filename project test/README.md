@@ -23,3 +23,8 @@
 
 ## 요구사항 명세서
 ![요구사항 명세서](https://github.com/dongh810/Beyond_SW_Camp_Study/assets/105986200/1da4106f-bd5e-4c63-a4d2-1849846c5678)
+
+##테스트 영상
+
+https://github.com/dongh810/Beyond_SW_Camp_Study/assets/105986200/7d59fbea-4289-411c-933e-f40e7defc16c
+
