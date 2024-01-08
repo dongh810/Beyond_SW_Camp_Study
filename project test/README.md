@@ -18,6 +18,10 @@
 
 ![KakaoTalk_20240105_111744162](https://github.com/dongh810/Beyond_SW_Camp_Study/assets/105986200/d070ae96-b6a4-4e72-a409-2ffa0c01792a)
 
+## ERD 바커표기법
+
+![스크린샷 2024-01-08 173500](https://github.com/dongh810/Beyond_SW_Camp_Study/assets/105986200/3861d655-b1c5-441e-bfa1-6c77ead11cfd)
+
 ## ERD CLOUD
 ![KakaoTalk_20240105_121957629](https://github.com/dongh810/Beyond_SW_Camp_Study/assets/105986200/5bea80bf-2fe8-40d0-a167-7b8bbee78468)
 
