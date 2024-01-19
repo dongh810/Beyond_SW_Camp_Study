@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Beyond_SW_Camp_Study.iml" filepath="$PROJECT_DIR$/Beyond_SW_Camp_Study.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chap01-literal-and-variable-lecture-source/chap01-literal-and-variable-lecture-source.iml" filepath="$PROJECT_DIR$/chap01-literal-and-variable-lecture-source/chap01-literal-and-variable-lecture-source.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chap03-method-and-api-lecture-source/chap03-method-and-api-lecture-source.iml" filepath="$PROJECT_DIR$/chap03-method-and-api-lecture-source/chap03-method-and-api-lecture-source.iml" />
+    </modules>
+  </component>
+</project>
