@@ -12,6 +12,7 @@ public class Member implements Serializable {       // 객체 입출력을 위�
     private int age;                // 회원나이
     private String[] hobbies;       // 회원취미들
     private BloodType bloodType;    // 혈액형
+    private String name;            // 이름
 
     /* 설명. 엔티티 클래스는 setter를 꼭 필요한 것만 만든다. */
 
@@ -19,11 +20,30 @@ public class Member implements Serializable {       // 객체 입출력을 위�
 
     }
 
-    public Member(int memNo, String id, String pwd, int age, String[] hobbies, BloodType bloodType) {
+    public Member(String id, String pwd, int age, String[] hobbies, String name) {
+        this.id = id;
+        this.pwd = pwd;
+        this.age = age;
+        this.hobbies = hobbies;
+        this.name = name;
+    }
+
+    public Member(int memNo, String id, String pwd, int age, String[] hobbies, BloodType bloodType,String name) {
+        this.memNo = memNo;
+        this.id = id;
+        this.pwd = pwd;
+        this.age = age;
+        this.hobbies = hobbies;
+        this.bloodType = bloodType;
+        this.name = name;
     }
 
     public int getMemNo() {
         return memNo;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getId() {
@@ -55,6 +75,15 @@ public class Member implements Serializable {       // 객체 입출력을 위�
                 ", age=" + age +
                 ", hobbies=" + Arrays.toString(hobbies) +
                 ", bloodType=" + bloodType +
+                ", name='" + name + '\'' +
                 '}';
+    }
+
+    public void setBloodType(BloodType bloodType) {
+        this.bloodType = bloodType;
+    }
+
+    public void setMemNo(int memNo) {
+        this.memNo = memNo;
     }
 }
