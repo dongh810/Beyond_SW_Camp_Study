@@ -1,0 +1,54 @@
+server:
+  port: 8000
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+#spring:
+#  application:
+#    name: gateway-server
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: 1st-service
+#        #  uri: http://localhost:52266/
+#
+#          # ?????(???? ???? ???? ???? ???)?? ??, ??? ? ??(uri)
+#          uri: lb://MY-1ST-SERVICE
+#
+#          # ??? ?????? ?? ??? '/first-service/**? ????~' ?? ??
+#          predicates:
+#            - Path=/first-service/**
+#
+#          # Global, Custom?? ??? ???? ??
+#          # (request ? response header? ? ??, segment? ??? ?? ??)
+#          filters:
+#            - AddRequestHeader=first-request, first-request-header
+#            - AddResponseHeader=first-response, first-response-header
+#            - RewritePath=/first-service/(?<segment>.*), /$\{segment}
+#        - id: 2nd-service
+#        #  uri: http://localhost:52375/
+#          uri: lb://MY-2ND-SERVICE
+#          predicates:
+#            - Path=/second-service/**
+#          filters:
+#            - AddRequestHeader=second-request, second-request-header
+#            - AddResponseHeader=second-response, second-response-header
+#            - RewritePath=/second-service/(?<segment>.*), /$\{segment}
+
+
+spring:
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      routes:
+       - id: user-service
+         uri: lb://SWCAMP-USER-SERVICE
+         predicates:
+           - Path=/user-service/**
+         filters:
+          - RewritePath=/user-service/(?<segment>.*),/$\{segment}
