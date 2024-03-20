@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .area {
+            width: 100px;
+            height: 100px;
+            border: 1px solid lightgray;
+        }
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    <h1>01. id를 이용한 요소 노드 취득</h1>
+
+    <div id="area1" class="area">
+        div영역1
+        <p id="area3">p 영역</p>
+    </div>
+    <!-- <div id="area1" class="area"> -->
+    <div id="area2" class="area">
+        div 영역2
+    </div>
+    <script>
+
+        /* 변수 이름 앞에 $표시를 두는 이유는 html 요소를 지니고 있음을 구분하기 위한 관례상 변수 네이밍 규칙 */
+        /* 아이디가 중복 될 경우는 첫 번째 요소 하나만 반환된다. */
+        const $elem = document.getElementById("area1");
+        console.log($elem);
+        console.log($elem.style);
+
+
+        /* 요소의 스타일 속성을 이용해서 css 적용(낙타봉 표기법 또는 케밥 표기법(대괄호로 접근)) */
+        // $elem.style.backgroundColor = "blue";
+        $elem.style['background-color'] = 'orange';
+
+        /* id 속성값을 그대로 딴 이름으로 접근도 가능하긴 하다. (추천 X) */
+        area1.style.backgroundColor = 'pink';
+
+        /* 존재하지 않는 id에 접근할 경우 null을 반환한다. */
+        const $elem2 = document.getElementById("area4");
+        console.log($elem2);
+    </script>
+    
+</body>
+</html>
