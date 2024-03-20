@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>02. interval</h1>
+
+    <!-- 지정한 기간마다 콜백함수를 계속 실행을 시키는것  -->
+    <h3>setInterval</h3>
+
+    <script>
+        let count = 0;
+        const timeId = setInterval(( )=> {
+            console.log(count++);
+            if(count == 6) {
+                clearInterval(timeId);
+                console.log('interval timer 종료!');
+            }
+        }, 1000);
+    </script>
+
+</body>
+</html>
