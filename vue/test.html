@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Document</title>
+    <style>
+        .rootContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .appContainer {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            border: 1px dotted black;
+            width: 80%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wine-card {
+            display: flex;
+            flex-direction: column;
+            width: 30%;
+            height: 300px;
+            border: 1px solid black;
+            justify-content: center;
+            align-items: center;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .itemContainer {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .image {
+            width: 70px;
+            height: 100px;
+        }
+
+        .btn-group {
+            display: flex;
+            width: 60%;
+            justify-content: space-around;
+        }
+
+        .btn {
+            width: 50px;
+            height: 50px;
+        }
+
+        .neon {
+            color: #fff;
+            text-shadow: 0 0 10px #00f, 0 0 20px #00f, 0 0 30px #00f, 0 0 40px #00f, 0 0 70px #00f, 0 0 80px #00f, 0 0 100px #00f, 0 0 150px #00f;
+            animation: neonAnimation 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonAnimation {
+            from {
+                text-shadow: 0 0 10px #00f, 0 0 20px #00f, 0 0 30px #00f, 0 0 40px #00f, 0 0 70px #00f, 0 0 80px #00f, 0 0 100px #00f, 0 0 150px #00f;
+            }
+
+            to {
+                text-shadow: 0 0 5px #00f, 0 0 10px #00f, 0 0 15px #00f, 0 0 20px #00f, 0 0 35px #00f, 0 0 40px #00f, 0 0 50px #00f, 0 0 75px #00f;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="step01" class="rootContainer">
+        <div v-if="!lodingState">
+            로딩을 준비합니다.
+        </div>
+        <template v-else>
+            <h1 :class={"neon":isMounted}>인생 와인</h1>
+
+            <div class="btn-group">
+                <button ref="back" class="btn">back</button>
+                <button ref="next" class="btn">next</button>
+            </div>
+            <div v-if="likes.length != 0">
+                <div>
+                    <p>내가 좋아하는 총 와인 : {{likes}}</p>
+                    <button @click="showLikedWines">{{viewingState?"쇼핑하기":"쇼핑완료"}}</button>
+                </div>
+            </div>
+            <div class="appContainer">
+                <template v-if="!viewingState">
+                    <Wine v-for="wine in pageWine" :key="wine.id" :like="likes" :wine="wine" @like-handler="likeWine"
+                        @hate-handler="hateWine" />
+                </template>
+                <template v-else>
+                    <div class="wine-card" v-for="wine in totalLikes">
+                        <p>
+                            {{wine.wine}}
+                        </p>
+                        <img class="image" :src="wine.image" alt="wine image" />
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+
+    <script>
+        const { onBeforeCreate, onCreated, onBeforeMount, onMounted, onBeforeUpdate, onUpdated, createApp, ref } = Vue
+
+        const Wine = {
+            props: ['wine', 'like'],
+            template: `
+               <div class="wine-card">
+                    <p>
+                       {{wine.wine}}
+                    </p>
+                    <img class="image" :src="wine.image" alt="wine image"/>
+                    <button v-if="!like.includes(wine.id)" @click="likeHandler(wine.id)">like</button>
+                    <button v-if="like.includes(wine.id)" @click="hateHandler(wine.id)">hate</button>
+                </div>
+            `,
+            methods: {
+                likeHandler(id) {
+                    this.$emit("like-handler", id);
+                },
+                hateHandler(id) {
+                    this.$emit("hate-handler", id);
+                }
+            },
+           
+            beforeUnmount() {
+                console.log("beforeUnmount ==== 컴포넌트가 DOM에서 언마운트 되기전에 호출된다.")
+            },
+            unmounted() {
+                console.log("unmounted === DOM에서 언마운트된 후 호출된다.")
+            }
+        }
+
+
+        createApp({
+            // 데이터를 정의한다.
+            setup() {
+                return {
+                    pageWine: [],
+                    index: 0,
+                    next: 10,
+                    lodingState: false,
+                    isMounted: false,
+                    likes: [],
+                    totalLikes: [{}],
+                    viewingState: false
+                }
+            },
+            methods: {
+                async goBack() {
+                    if (!(this.index <= 0)) {
+                        this.index -= 10;
+                        this.next -= 10;
+                        await this.updatePageWine(this.index, this.next);
+                    }
+                },
+                async nextPage() {
+                    const total = await this.allWines.then(data => data.length);
+                    if (!(this.next >= total)) {
+                        this.index += 10;
+                        this.next += 10;
+                        await this.updatePageWine(this.index, this.next);
+                    }
+                },
+
+                async updatePageWine(index, next) {
+                    this.pageWine = await this.allWines.then(data => data.slice(index, next));
+                },
+
+                likeWine(id) {
+                    this.likes.push(id);
+                },
+
+                hateWine(id) {
+                    this.likes = this.likes.filter(item => item !== id);
+                },
+
+                async showLikedWines() {
+                    this.loadingState = true;
+                    this.viewingState = !this.viewingState;
+
+                    if (this.viewingState) {
+                        const data = await this.allWines;
+                        this.totalLikes = data.filter(obj => this.likes.includes(obj.id));
+                    }
+                    this.loadingState = false;
+                }
+            },
+
+            onBeforeCreate() {
+                console.log("beforeCreate === 컴포넌트 인스턴스 생성 전 외부 api 호출")
+                this.allWines = fetch("https://api.sampleapis.com/wines/reds")
+                    .then(response => response.json());
+            },
+
+            onCreated() {
+                console.log("created === 컴포넌트 생성 후 초기 데이터 설정")
+                this.allWines.then(data => this.pageWine = data.slice(this.index, this.next));
+            },
+            
+            onBeforeMount() {
+                this.lodingState = true;
+                console.log("beforeMount === 로딩완료 DOM에 추가")
+            },
+
+            
+            onMounted() {
+                this.isMounted = true;
+                console.log("mounted === 인생와인 영업 시작 마운트 페이지 애미메이션 on ")
+                this.$refs.back.addEventListener("click", this.goBack);
+                this.$refs.next.addEventListener("click", this.nextPage);
+            },
+
+            
+            onBeforeUpdate() {
+                this.likes = [...new Set(this.likes)];
+                console.log("beforeUpdate === 컴포넌트가 업데이트 되기 전에 반응성 변수의 상태를 조작함")
+            },
+
+            
+            onUpdated() {
+                this.$refs.back.addEventListener("click", this.goBack);
+                this.$refs.next.addEventListener("click", this.nextPage);
+
+                console.log("updated === 컴포넌트 렌더링이 완료되어 이벤트를 할당함")
+            },
+
+
+            components: {
+                Wine
+            }
+        }).mount("#step01")
+
+    </script>
+</body>
+
+</html>
