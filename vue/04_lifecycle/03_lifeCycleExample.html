@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Life Wines with Vue 3 Composition API</title>
+    <style>
+        .rootContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .appContainer {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            border: 1px dotted black;
+            width: 80%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wine-card {
+            display: flex;
+            flex-direction: column;
+            width: 30%;
+            height: 300px;
+            border: 1px solid black;
+            justify-content: center;
+            align-items: center;
+            margin: 5px;
+        }
+
+        .image {
+            width: 70px;
+            height: 100px;
+        }
+
+        .btn-group {
+            display: flex;
+            width: 60%;
+            justify-content: space-around;
+        }
+
+        .btn {
+            width: 50px;
+            height: 50px;
+        }
+
+        .neon {
+            color: #fff;
+            text-shadow: 0 0 10px #00f, 0 0 20px #00f, 0 0 30px #00f, 0 0 40px #00f, 0 0 70px #00f, 0 0 80px #00f, 0 0 100px #00f, 0 0 150px #00f;
+            animation: neonAnimation 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonAnimation {
+            from {
+                text-shadow: 0 0 10px #00f, 0 0 20px #00f, 0 0 30px #00f, 0 0 40px #00f, 0 0 70px #00f, 0 0 80px #00f, 0 0 100px #00f, 0 0 150px #00f;
+            }
+
+            to {
+                text-shadow: 0 0 5px #00f, 0 0 10px #00f, 0 0 15px #00f, 0 0 20px #00f, 0 0 35px #00f, 0 0 40px #00f, 0 0 50px #00f, 0 0 75px #00f;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="rootContainer">
+        <div v-if="loadingState">
+            로딩 중입니다...
+        </div>
+        <template v-else>
+            <h1 :class="{'neon': isMounted}">인생 와인</h1>
+
+            <div class="btn-group">
+                <button @click='goBack' class="btn">back</button>
+                <button @click="nextPage" class="btn">next</button>
+            </div>
+
+            <!-- 나중에 추가할 부분1 -->
+            <div v-if="likes.length">
+                <div>
+                    <p>내가 좋아하는 총 와인 id들: {{ likes }}</p>
+
+                    <!-- 나중에 추가할 부분2 -->
+                    <button @click="toggleViewingState">{{ viewingState ? '쇼핑하기': '쇼핑완료' }}</button>
+                </div>
+            </div>
+
+            <div class="appContainer">
+
+                <!-- 쇼핑하기 -->
+                <template v-if="!viewingState">
+                    <div class="wine-card" v-for="wine in pageWine" :key="wine.id">
+                        <p>{{ wine.wine }}</p>
+                        <img class="image" :src="wine.image" alt="wine image"/>
+
+                        <!-- 나중에 추가할 부분1 -->
+                        <button v-if="!likes.includes(wine.id)" @click="likeWine(wine.id)">like</button>
+                        <button v-if="likes.includes(wine.id)" @click="hateWine(wine.id)">hate</button>
+                    </div>
+                </template>
+
+                <!-- 쇼핑완료 -->
+                <template v-else>
+
+                    <!-- 나중에 추가할 부분2 -->
+                    <div class="wine-card" v-for="wine in totalLikes" :key="wine.id">
+                        <p>{{ wine.wine }}</p>
+                        <img class="image" :src="wine.image" alt="wine image"/>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+    <script>
+        const {createApp, reactive, onMounted, toRefs} = Vue;
+
+        /* wine과 관련된 상태값(reactive 하나의 객체로)과 기능들을 반환하는 함수 */
+        const useWines = () => {
+            const state = reactive({
+                loadingState: true,     // 로딩 상태 토글을 위한 상태값
+                isMounted: false,       // 마운트 상태를 관리할 상태값(인생와인에 css 적용 시 활용 될 예정)
+                wines: [],              // 비동기 통신으로 불러온 와인 데이터를 담을 상태값
+                pageWine: [],           // 한 페이지에 그려질 와인 데이터를 담을 상태값
+                index: 0,               // 한 페이지의 첫 와인 시작 인덱스 값
+                next: 10,               // 다음 페이지의 첫 와인 시작 인덱스 값(next - 1: 한 페이지의 마지막 와인 인덱스 값) 
+                viewingState: false,    // 쇼핑 완료 버튼을 누르기 전(와인 목록 보기)과 후(고른 와인들만 보기)를 구분하기 위한 상태값
+                likes: [],              // 좋아요 한 wine 목록(wine의 id값만 관리)
+                totalLikes: []          // 좋아요 한 wine 목록(wine 정보 전체)
+            });
+
+            const goBack = () => {
+                if(state.index > 0) {   // 배열은 음수부터 시작할 수 없다.
+                    state.index -= 10;
+                    state.next -= 10;
+                    state.pageWine = state.wines.slice(state.index, state.next);
+                }
+            }
+
+            const nextPage = () => {
+                if(state.next < state.wines.length) {   // 페이지의 마지막 와인 인덱스가 전체에서 마지막 와인 인덱스보다 작아야 된다.
+                    state.index += 10;
+                    state.next += 10;
+                    state.pageWine = state.wines.slice(state.index, state.next);
+                }
+            }
+
+            const fetchWines = async () => {
+                const response = await fetch("https://api.sampleapis.com/wines/reds");
+                const data = await response.json();
+                console.log(data);
+                state.wines = data;
+                state.pageWine = data.slice(state.index, state.next);  // index부터 (next - 1)까지 범위의 와인 배열 반환
+                state.loadingState = false;
+            }
+
+            const likeWine = (id) => {
+                if(!state.likes.includes(id)) {    // 기존 likes 배열에 없는 wine이 넘어 왔을 때만
+                    state.likes.push(id);
+                }
+
+            }
+
+            const hateWine = (id) => {
+                const index = state.likes.indexOf(id);  // hate한 wine이 넘어오면 기존 likes에서 찾아서 해당 인덱스 반환
+                if(index > -1) {                        // 기존에 likes에 존재 할 때만
+
+                    /* filter는 콜백함수가 반환하는 값이 true인 것들만 추려내어 다시 배열을 만들어 반환 */
+                    state.likes = state.likes.filter((item) => item !== id); 
+                }
+            }
+
+            const toggleViewingState = () => {
+                state.viewingState =!state.viewingState;
+                if(state.viewingState) {
+
+                    /* 전체 와인에서 likes에 담긴 와인의 id와 일치하는 와인들만(좋아요 한 와인들) 추려내어 totalLikes에 담기 */
+                    state.totalLikes = state.wines.filter(wine => state.likes.includes(wine.id));
+                }
+            }
+
+            /* 우리가 만든 컴포넌트가 화면에 mount 되고 나서 */
+            onMounted(async () => {
+                // console.log('mount 이후 시점 실행');
+                await fetchWines();     // api 서버로부터 wine 정보를 불러오는 비동기 통신
+                state.isMounted = true;
+            }); 
+
+            // return {loadingState: true};
+
+            /*
+                toRefs:
+                반응형 객체를 반환하면, 이것을 사용하는 컴포넌트가 반응형을 잃지 않고 분해 할당 및 확장을 할 수 있다.
+                (reactive로 관리중인 객체의 프로퍼티를 꺼내기 위한 용도이기도 하다.)
+            */
+            return {...toRefs(state), goBack, nextPage, likeWine, hateWine, toggleViewingState};     // 객체 축약 문법
+        }
+
+        createApp({
+            setup() {
+                console.log(useWines);
+                const {loadingState, isMounted, wines, pageWine, index, next, viewingState, goBack, nextPage, likes, likeWine, hateWine, totalLikes, toggleViewingState} = useWines();      // 객체 구조 분해 할당
+                // const loadingState = useWines().loadingState;
+                return {
+                    loadingState, isMounted, wines, pageWine, index, next, viewingState, goBack, nextPage, likes, likeWine, hateWine, totalLikes, toggleViewingState
+                }
+            }
+        }).mount("#app");
+    </script>
+</body>
+</html>
