@@ -1,0 +1,28 @@
+#docker-compose는 컨테이너들을 한번에 다루기 용이하게 하며 image들 생성 및 container 생성에 효율적이다.
+
+
+version: '3.8'
+services:
+  vue-app:
+    build:
+      context: ./vueProject
+      dockerfile: Dockerfile
+    ports:
+      - "8011:5173"
+    networks:
+      - camp-net
+  
+  springboot-app:
+    build:
+      context: ./bootProject
+      dockerfile: Dockerfile
+    ports:
+      - "8055:7777"
+    networks:
+      - camp-net
+
+# 기본 네트워크 유형을 bridge로 하면 이 네트워크 유형은 호스트 pc내부의 사설 네트워크가 생성된다.
+# 브리지 네트워크의 컨테이너는 포트를 호스트에 노출하지 않고 서로 통신할 수 있다.(각 app의 이름)
+networks:
+  camp-net:
+    driver: bridge
